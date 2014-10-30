@@ -82,21 +82,23 @@ exports.getEmails = function(folderName, limit, callback) {
 
     parser.parseString(body, function(err, result) {
 
+      var responseCode = '';
+      var rootFolder = '';
       if (result['s:Body'] !== null) {
-        var responseCode = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:ResponseCode'];
+        responseCode = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:ResponseCode'];
         if (responseCode !== 'NoError') {
           return callback(new Error(responseCode));
         }
           
-        var rootFolder = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:RootFolder'];
+        rootFolder = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:RootFolder'];
       }
       else {
-        var responseCode = result['soap:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:ResponseCode'];
+        responseCode = result['soap:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:ResponseCode'];
         if (responseCode !== 'NoError') {
           return callback(new Error(responseCode));
         }
           
-        var rootFolder = result['soap:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:RootFolder'];
+        rootFolder = result['soap:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:RootFolder'];
       }
 
       var emails = [];
@@ -254,23 +256,25 @@ exports.getEmail = function(itemId, callback) {
     var parser = new xml2js.Parser();
 
     parser.parseString(body, function(err, result) {
+      var responseCode = '';
+      var item = '';
       if (result['s:Body'] !== null) {
-        var responseCode = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:ResponseCode'];
+        responseCode = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:ResponseCode'];
 
         if (responseCode !== 'NoError') {
           return callback(new Error(responseCode));
         }
          
-        var item = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
+        item = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
       }
       else {
-        var responseCode = result['soap:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:ResponseCode'];
+        responseCode = result['soap:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:ResponseCode'];
 
         if (responseCode !== 'NoError') {
           return callback(new Error(responseCode));
         }
          
-        var item = result['soap:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
+        item = result['soap:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
       }
 
       var itemId = {
