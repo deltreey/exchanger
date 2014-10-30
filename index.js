@@ -11,7 +11,6 @@ exports.client = null;
 
 
 exports.initialize = function(settings, callback) {
-  var soap = require('soap');
   // TODO: Handle different locations of where the asmx lives.
   var endpoint = 'https://' + path.join(settings.url, 'EWS/Exchange.asmx');
   var url = path.join(__dirname, 'Services.wsdl');
