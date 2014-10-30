@@ -88,7 +88,7 @@ exports.getEmails = function(folderName, limit, callback) {
         result = result['soap:Envelope'];
       }
       else if (result['s:Envelope'] !== null) {
-        result = 's:Envelope';
+        result = result['s:Envelope'];
       }
 
       if (result['s:Body'] !== null) {
@@ -173,7 +173,7 @@ exports.getAttachmentIds = function (emailId, callback) {
         result = result['soap:Envelope'];
       }
       else if (result['s:Envelope'] !== null) {
-        result = 's:Envelope';
+        result = result['s:Envelope'];
       }
 
       if (xml['s:Body'] !== null) {
@@ -224,7 +224,7 @@ exports.getAttachmentById = function (attachmentId, callback) {
         xml = xml['soap:Envelope'];
       }
       else if (xml['s:Envelope'] !== null) {
-        xml = 's:Envelope';
+        xml = xml['s:Envelope'];
       }
 
       if (xml['s:Body'] !== null) {
@@ -283,7 +283,7 @@ exports.getEmail = function(itemId, callback) {
         result = result['soap:Envelope'];
       }
       else if (result['s:Envelope'] !== null) {
-        result = 's:Envelope';
+        result = result['s:Envelope'];
       }
       
       if (result['s:Body'] !== null) {
