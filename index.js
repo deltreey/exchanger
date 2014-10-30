@@ -133,6 +133,56 @@ exports.getEmails = function(folderName, limit, callback) {
   });
 }
 
+exports.getAttachmentIds = function (emailId, callback) {
+  var request =
+    '<tns:GetItem>\
+      <tns:ItemShape>\
+        <t:BaseShape>IdOnly</t:BaseShape>\
+        <t:AdditionalProperties>\
+          <t:FieldURI FieldURI="item:Attachments" />\
+        </t:AdditionalProperties>\
+      </tns:ItemShape>\
+      <tns:ItemIds>\
+        <t:ItemId Id="%s" ChangeKey="%s" />\
+      </tns:ItemIds>\
+    </tns:GetItem>';
+  var id = emailId.split('|')[0];
+  var changeKey = emailId.split('|')[1];
+  var soapRequest = sprintf(request, id, changeKey);
+  exports.client.GetItem(soapRequest, function (err, result, body) {
+    if (err) { return callback(err); }
+
+    var responseCode = result.ResponseMessages.GetItemResponseMessage.ResponseCode;
+    if (responseCode !== 'NoError') {
+      return callback(new Error(responseCode));
+    }
+    var parser = new xml2js.Parser();
+    parser.parseString(body, function(error, xml) {
+      if (error) { return callback(error); }
+      var response = '';
+      if (xml['s:Body'] !== null) {
+        response = xml['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
+      }
+      else {
+        var response = xml['soap:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
+      }
+      var returnValues = [];
+      if (typeof(response) === Array) {
+        response.foreach(function(item, idx) {
+          var attachmentId = item['t:ItemId']['Id'];
+          var attachmentChangeKey = item['t:ItemId']['ChangeKey'];
+          returnValues.push(attachmentId + '|' + attachmentChangeKey);
+        });
+      }
+      else {
+        var attachmentId = response['t:ItemId']['@'].Id;
+        var attachmentChangeKey = response['t:ItemId']['@'].ChangeKey;
+        returnValues.push(attachmentId + '|' + attachmentChangeKey);
+      }
+      return callback(returnValues);
+    });
+  });
+};
 
 exports.getEmail = function(itemId, callback) {
   if (!exports.client) {
