@@ -180,36 +180,42 @@ exports.getAttachmentIds = function (emailId, callback) {
         response = xml['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
       }
       else {
-        var response = xml['soap:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
+        var response = xml['soap:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message']['t:Attachments'];
       }
       var returnValues = [];
       if (typeof(response) === Array) {
         response.foreach(function(item, idx) {
-          var attachmentId = item['t:ItemId']['Id'];
-          var attachmentChangeKey = item['t:ItemId']['ChangeKey'];
-          returnValues.push(attachmentId + '|' + attachmentChangeKey);
+          if (item['t:FileAttachment'] === undefined) {
+            //not a file
+          }
+          else {
+            var attachmentId = item['t:FileAttachment']['t:AttachmentId']['@'].Id;
+            returnValues.push(attachmentId);
+          }
         });
       }
       else {
-        var attachmentId = response['t:ItemId']['@'].Id;
-        var attachmentChangeKey = response['t:ItemId']['@'].ChangeKey;
-        returnValues.push(attachmentId + '|' + attachmentChangeKey);
+        if (response['t:FileAttachment'] !== undefined) {
+          var attachmentId = response['t:FileAttachment']['t:AttachmentId']['@'].Id;
+          returnValues.push(attachmentId);
+        }
       }
       return callback(null, returnValues);
     });
   });
 };
 
+//console.log(exports.client.describe().ExchangeWebService.ExchangeWebPort.GetAttachment);
 exports.getAttachmentById = function (attachmentId, callback) {
   var request = 
     '<tns:GetAttachment>\
       <tns:AttachmentIds>\
-        <t:AttachmentId Id="%s" ChangeKey="%s" />\
+        <t:AttachmentId Id="%s" />\
       </tns:AttachmentIds>\
     </tns:GetAttachment>';
   var id = attachmentId.split('|')[0];
   var changeKey = attachmentId.split('|')[1];
-  var soapRequest = sprintf(request, id, changeKey);
+  var soapRequest = sprintf(request, id);
   exports.client.GetItem(soapRequest, function (err, result, body) {
     if (err) { return callback(err); }
 
