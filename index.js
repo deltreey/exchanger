@@ -195,7 +195,7 @@ exports.getAttachmentIds = function (emailId, callback) {
         var attachmentChangeKey = response['t:ItemId']['@'].ChangeKey;
         returnValues.push(attachmentId + '|' + attachmentChangeKey);
       }
-      return callback(returnValues);
+      return callback(null, returnValues);
     });
   });
 };
