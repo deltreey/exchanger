@@ -84,14 +84,14 @@ exports.getEmails = function(folderName, limit, callback) {
 
       var responseCode = '';
       var rootFolder = '';
-      if (result['soap:Envelope'] !== null) {
+      if (result['soap:Envelope'] !== undefined) {
         result = result['soap:Envelope'];
       }
-      else if (result['s:Envelope'] !== null) {
+      else if (result['s:Envelope'] !== undefined) {
         result = result['s:Envelope'];
       }
 
-      if (result['s:Body'] !== null) {
+      if (result['s:Body'] !== undefined) {
         responseCode = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:ResponseCode'];
         if (responseCode !== 'NoError') {
           return callback(new Error(responseCode));
@@ -169,14 +169,14 @@ exports.getAttachmentIds = function (emailId, callback) {
     parser.parseString(body, function(error, xml) {
       if (error) { return callback(error); }
       var response = '';
-      if (result['soap:Envelope'] !== null) {
+      if (result['soap:Envelope'] !== undefined) {
         result = result['soap:Envelope'];
       }
-      else if (result['s:Envelope'] !== null) {
+      else if (result['s:Envelope'] !== undefined) {
         result = result['s:Envelope'];
       }
 
-      if (xml['s:Body'] !== null) {
+      if (xml['s:Body'] !== undefined) {
         response = xml['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
       }
       else {
@@ -220,14 +220,14 @@ exports.getAttachmentById = function (attachmentId, callback) {
 
     parser.parseString(body, function(error, xml) {
       if (error) { return callback(error); }
-      if (xml['soap:Envelope'] !== null) {
+      if (xml['soap:Envelope'] !== undefined) {
         xml = xml['soap:Envelope'];
       }
-      else if (xml['s:Envelope'] !== null) {
+      else if (xml['s:Envelope'] !== undefined) {
         xml = xml['s:Envelope'];
       }
 
-      if (xml['s:Body'] !== null) {
+      if (xml['s:Body'] !== undefined) {
         var content = xml['s:Body']['m:GetAttachmentResponse']['m:ResponseMessages']['m:GetAttachmentResponseMessage']['m:Attachments']['t:FileAttachment']['t:Content'];
         var name = xml['s:Body']['m:GetAttachmentResponse']['m:ResponseMessages']['m:GetAttachmentResponseMessage']['m:Attachments']['t:FileAttachment']['t:Name'];
       }
@@ -279,14 +279,14 @@ exports.getEmail = function(itemId, callback) {
     parser.parseString(body, function(err, result) {
       var responseCode = '';
       var item = '';
-      if (result['soap:Envelope'] !== null) {
+      if (result['soap:Envelope'] !== undefined) {
         result = result['soap:Envelope'];
       }
-      else if (result['s:Envelope'] !== null) {
+      else if (result['s:Envelope'] !== undefined) {
         result = result['s:Envelope'];
       }
       
-      if (result['s:Body'] !== null) {
+      if (result['s:Body'] !== undefined) {
         responseCode = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:ResponseCode'];
 
         if (responseCode !== 'NoError') {
