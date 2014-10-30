@@ -184,6 +184,40 @@ exports.getAttachmentIds = function (emailId, callback) {
   });
 };
 
+exports.getAttachmentById = function (attachmentId, callback) {
+  var request = 
+    '<tns:GetAttachment>\
+      <tns:AttachmentIds>\
+        <t:AttachmentId Id="%s" ChangeKey="%s" />\
+      </tns:AttachmentIds>\
+    </tns:GetAttachment>';
+  var id = attachmentId.split('|')[0];
+  var changeKey = attachmentId.split('|')[1];
+  var soapRequest = sprintf(request, id, changeKey);
+  exports.client.GetItem(soapRequest, function (err, result, body) {
+    if (err) { return callback(err); }
+
+    var responseCode = result.ResponseMessages.GetItemResponseMessage.ResponseCode;
+    if (responseCode !== 'NoError') {
+      return callback(new Error(responseCode));
+    }
+    var parser = new xml2js.Parser();
+    parser.parseString(body, function(error, xml) {
+      if (error) { return callback(error); }
+      if (xml['s:Body'] !== null) {
+        var content = xml['s:Body']['m:GetAttachmentResponse']['m:ResponseMessages']['m:GetAttachmentResponseMessage']['m:Attachments']['t:FileAttachment']['t:Content'];
+        var name = xml['s:Body']['m:GetAttachmentResponse']['m:ResponseMessages']['m:GetAttachmentResponseMessage']['m:Attachments']['t:FileAttachment']['t:Name'];
+      }
+      else {
+        var content = xml['soap:Body']['m:GetAttachmentResponse']['m:ResponseMessages']['m:GetAttachmentResponseMessage']['m:Attachments']['t:FileAttachment']['t:Content'];
+        var name = xml['soap:Body']['m:GetAttachmentResponse']['m:ResponseMessages']['m:GetAttachmentResponseMessage']['m:Attachments']['t:FileAttachment']['t:Name'];
+      }
+      callback(null, { Name: name, Content: content });
+    });
+  });
+};
+
+
 exports.getEmail = function(itemId, callback) {
   if (!exports.client) {
     return callback(new Error('Call initialize()'))
