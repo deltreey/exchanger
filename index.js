@@ -84,6 +84,13 @@ exports.getEmails = function(folderName, limit, callback) {
 
       var responseCode = '';
       var rootFolder = '';
+      if (result['soap:Envelope'] !== null) {
+        result = result['soap:Envelope'];
+      }
+      else if (result['s:Envelope'] !== null) {
+        result = 's:Envelope';
+      }
+
       if (result['s:Body'] !== null) {
         responseCode = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:ResponseCode'];
         if (responseCode !== 'NoError') {
@@ -162,6 +169,13 @@ exports.getAttachmentIds = function (emailId, callback) {
     parser.parseString(body, function(error, xml) {
       if (error) { return callback(error); }
       var response = '';
+      if (result['soap:Envelope'] !== null) {
+        result = result['soap:Envelope'];
+      }
+      else if (result['s:Envelope'] !== null) {
+        result = 's:Envelope';
+      }
+
       if (xml['s:Body'] !== null) {
         response = xml['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
       }
@@ -206,6 +220,13 @@ exports.getAttachmentById = function (attachmentId, callback) {
 
     parser.parseString(body, function(error, xml) {
       if (error) { return callback(error); }
+      if (xml['soap:Envelope'] !== null) {
+        xml = xml['soap:Envelope'];
+      }
+      else if (xml['s:Envelope'] !== null) {
+        xml = 's:Envelope';
+      }
+
       if (xml['s:Body'] !== null) {
         var content = xml['s:Body']['m:GetAttachmentResponse']['m:ResponseMessages']['m:GetAttachmentResponseMessage']['m:Attachments']['t:FileAttachment']['t:Content'];
         var name = xml['s:Body']['m:GetAttachmentResponse']['m:ResponseMessages']['m:GetAttachmentResponseMessage']['m:Attachments']['t:FileAttachment']['t:Name'];
@@ -258,6 +279,13 @@ exports.getEmail = function(itemId, callback) {
     parser.parseString(body, function(err, result) {
       var responseCode = '';
       var item = '';
+      if (result['soap:Envelope'] !== null) {
+        result = result['soap:Envelope'];
+      }
+      else if (result['s:Envelope'] !== null) {
+        result = 's:Envelope';
+      }
+      
       if (result['s:Body'] !== null) {
         responseCode = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:ResponseCode'];
 
