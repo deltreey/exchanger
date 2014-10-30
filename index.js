@@ -5,6 +5,7 @@ var path = require('path')
   , sprintf = require('sprintf-js').sprintf
   , soap = require('soap');
   ;
+var parser = new xml2js.Parser();
 
 
 exports.client = null;
@@ -78,7 +79,6 @@ exports.getEmails = function(folderName, limit, callback) {
       return callback(err);
     }
 
-    var parser = new xml2js.Parser();
 
     parser.parseString(body, function(err, result) {
 
@@ -203,7 +203,7 @@ exports.getAttachmentById = function (attachmentId, callback) {
     if (responseCode !== 'NoError') {
       return callback(new Error(responseCode));
     }
-    var parser = new xml2js.Parser();
+
     parser.parseString(body, function(error, xml) {
       if (error) { return callback(error); }
       if (xml['s:Body'] !== null) {
