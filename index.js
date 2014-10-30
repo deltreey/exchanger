@@ -81,14 +81,24 @@ exports.getEmails = function(folderName, limit, callback) {
     var parser = new xml2js.Parser();
 
     parser.parseString(body, function(err, result) {
-      var responseCode = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:ResponseCode'];
 
-      if (responseCode !== 'NoError') {
-        return callback(new Error(responseCode));
+      if (result['s:Body'] !== null) {
+        var responseCode = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:ResponseCode'];
+        if (responseCode !== 'NoError') {
+          return callback(new Error(responseCode));
+        }
+          
+        var rootFolder = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:RootFolder'];
       }
-        
-      var rootFolder = result['s:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:RootFolder'];
-      
+      else {
+        var responseCode = result['soap:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:ResponseCode'];
+        if (responseCode !== 'NoError') {
+          return callback(new Error(responseCode));
+        }
+          
+        var rootFolder = result['soap:Body']['m:FindItemResponse']['m:ResponseMessages']['m:FindItemResponseMessage']['m:RootFolder'];
+      }
+
       var emails = [];
       rootFolder['t:Items']['t:Message'].forEach(function(item, idx) {
         var md5hasher = crypto.createHash('md5');
@@ -160,13 +170,24 @@ exports.getEmail = function(itemId, callback) {
     var parser = new xml2js.Parser();
 
     parser.parseString(body, function(err, result) {
-      var responseCode = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:ResponseCode'];
+      if (result['s:Body'] !== null) {
+        var responseCode = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:ResponseCode'];
 
-      if (responseCode !== 'NoError') {
-        return callback(new Error(responseCode));
+        if (responseCode !== 'NoError') {
+          return callback(new Error(responseCode));
+        }
+         
+        var item = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
       }
-       
-      var item = result['s:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
+      else {
+        var responseCode = result['soap:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:ResponseCode'];
+
+        if (responseCode !== 'NoError') {
+          return callback(new Error(responseCode));
+        }
+         
+        var item = result['soap:Body']['m:GetItemResponse']['m:ResponseMessages']['m:GetItemResponseMessage']['m:Items']['t:Message'];
+      }
 
       var itemId = {
         id: item['t:ItemId']['@'].Id,
