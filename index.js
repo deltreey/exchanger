@@ -74,14 +74,14 @@ exports.getEmails = function(folderName, limit, callback) {
       '</tns:ParentFolderIds>' + 
     '</tns:FindItem>';
 
-  exports.client.FindItem(soapRequest, function(err, result, body) {
-    if (err) {
-      return callback(err);
+  exports.client.FindItem(soapRequest, function(soapError, soapResult, body) {
+    if (soapError) {
+      return callback(soapError);
     }
 
 
     parser.parseString(body, function(err, result) {
-
+      if (err) { return callback(err); }
       var responseCode = '';
       var rootFolder = '';
       if (result['soap:Envelope'] !== undefined) {
