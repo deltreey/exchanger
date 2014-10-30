@@ -2,6 +2,8 @@ var path = require('path')
   , moment = require('moment')
   , crypto = require('crypto')
   , xml2js = require('xml2js')
+  , sprintf = require('sprintf-js').sprintf
+  , soap = require('soap');
   ;
 
 
